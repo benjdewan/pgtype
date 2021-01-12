@@ -3,6 +3,7 @@ package pgtype
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"strconv"
 
 	errors "golang.org/x/xerrors"
 )
@@ -40,6 +41,10 @@ func (dst *Text) Set(src interface{}) error {
 		} else {
 			*dst = Text{String: string(value), Status: Present}
 		}
+	case int, int64, int32, int16, int8:
+		*dst = Text{String: strconv.FormatInt(int64(value), 10), Status: Present}
+	case uint, uint64, uint32, uint16, uint8:
+		*dst = Text{String: strconv.FormatUint(uint64(value), 10), Status: Present}
 	default:
 		if originalSrc, ok := underlyingStringType(src); ok {
 			return dst.Set(originalSrc)
